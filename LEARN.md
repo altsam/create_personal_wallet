@@ -123,9 +123,15 @@ Create a new file inside the `cmd` directory and call it `utils.go`. Within this
 package cmd
 
 import ( 
-"context" 
-"github.com/portto/solana-go-sdk/client" 
-"github.com/portto/solana-go-sdk/common" "github.com/portto/solana-go-sdk/program/sysprog" "github.com/portto/solana-go-sdk/types" 
+"context"	
+"io/ioutil"
+"log"
+
+"github.com/portto/solana-go-sdk/client"
+"github.com/portto/solana-go-sdk/client/rpc"
+"github.com/portto/solana-go-sdk/common"
+"github.com/portto/solana-go-sdk/program/sysprog"
+"github.com/portto/solana-go-sdk/types" 
 )
 ```
 
@@ -225,6 +231,300 @@ The `run` parameter contains the function that’ll be executed when the command
 What if we wanted to import one of our existing wallets? `solana-go-sdk` provides us with a handy function to do so, called `AccountFromBytes`.
 Within the `utils.go` file add a new empty function called `ImportOldWallet`. This function will take the private key in byte array
 
-# Conclusion
+What if we wanted to import one of our existing wallets? `solana-go-sdk` provides us with a handy function to do so, called `AccountFromBytes`.
+Within the `utils.go` file add a new empty function called `ImportOldWallet`. This function will take the private key in a byte array within the `key_data` file and then import the existing wallet to our `key_data` file which is holding the key.
+Again we’ll be using this function to create our `wallet` object which will be used in future functions.
+We’ll be adding out functionalities in the `utils.go`. Create an empty function called `CreateNewWallet` and add it to the end of `utils.go`. This function takes in the privateKey as a byte array, RPCEndpoint as a string and returns a Wallet object.
 
-Congratulations on completing the Solana wallet quest! You now have your very own Solana blockchain wallet to play with and share with your friends. Cheers on your Solana development journey!
+```
+func ImportOldWallet(privateKey []byte, RPCEndpoint string) (Wallet, error) {
+}
+```
+
+Let’s fill in this function.
+```
+wallet, err := types.AccountFromBytes(privateKey)
+if err != nil {
+return Wallet{}, err
+}
+
+return Wallet {
+wallet,
+client.NewClient(RPCEndpoint),
+}, nil
+```
+The `solana-go-sdk` provides a handy function to import an account using the `AccountFromBytes` function. Finally, the `ImportOldWallet` function would look like the following.
+```
+func ImportOldWallet(privateKey []byte, RPCEndpoint string) (Wallet, error) { 
+// import a wallet with bytes slice private key 
+wallet, err := types.AccountFromBytes(privateKey) 
+if err != nil { 
+return Wallet{}, err 
+} 
+return Wallet{ 
+wallet, 
+client.NewClient(RPCEndpoint), 
+}, nil 
+}
+```
+Let’s call this function in our `importWallet` command. We’ll be updating the `run` parameter within `importWalletCmd`. 
+```
+var importWalletCmd = &cobra.Command{
+Use:   "importWallet",
+Short: "Imports and existing wallet",
+Long:  "Imports and existing wallet from a given private key in the 'data' file and returns a wallet object.",
+Run: func(cmd *cobra.Command, args []string) {
+fmt.Println("Importing wallet from the 'key_data' file.") 
+wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint)
+      		fmt.Println("Public Key: " + wallet.account.PublicKey.ToBase58())
+      		balance, _ := GetBalance()
+       		fmt.Println("Wallet balance: " + strconv.Itoa(int(balance/1e9)) + “SOL”)
+},
+}
+```
+The `run` parameter contains the function that’ll be executed when the command is executed. We’re simply calling over here the function we created in `utils.go`. We’ll soon see how to implement the `GetBalance` function that we’re using over here to get the balance of our wallet.
+
+# Implementing get balance functionality
+Every wallet must be able to tell its balance. Let’s implement the balance functionality for our wallet. We’ll be adding a `GetBalance` function in `utils.go`, this function can then be used to fetch the balance of the wallet existing in the `key_data` file.
+Create an empty function called `GetBalance` which returns amount as an integer(uint64).
+```
+func GetBalance() (uint64, error) {
+}
+```
+First we need to import our wallet, since we’re developing the application, we’ll be passing the endpoint as devnet.
+```
+wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint) 
+balance, err := wallet.c.GetBalance( 
+context.TODO(),                      // request context
+wallet.account.PublicKey.ToBase58(), // wallet to fetch balance for 
+) 
+if err != nil { 
+return 0, nil 
+}
+```
+The `GetBalance` function returns us the balance in lamports. We can then convert this to SOL by dividing with 1e9.
+Finally, our function looks like
+```
+func GetBalance() (uint64, error) {
+    wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint) 
+    balance, err := wallet.c.GetBalance( 
+        context.TODO(),                      // request context
+        wallet.account.PublicKey.ToBase58(), // wallet to fetch balance for 
+    ) 
+    if err != nil { 
+        return 0, nil 
+    }
+    return balance, nil
+}
+```
+
+# Implementing the airdrop functionality
+For every transaction on the blockchain, we pay fees in SOL. To test out transacting on the blockchain, Solana allows us to ‘airdrop’ ourselves some play SOL to our wallet. Let’s create a function that allows us to airdrop SOL into our wallets.
+Create an empty function called `RequestAirdrop` and add it to the end of `utils.go`. This function takes in the amount of SOL to be airdropped and returns the transaction confirmation hash as string. 
+```
+func ImportOldWallet(privateKey []byte, RPCEndpoint string) (Wallet, error) {
+}
+```
+Let’s first import our wallet from the `key_data` file and also convert our SOL amount to lamports as the `RequestAirdrop` function takes the amount in lamports (1SOL = 1e9 lamports). We can do so using the following command
+```
+wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint) 
+amount = amount * 1e9 // turning SOL into lamports 
+```
+Now, we can use the `RequestAirdrop` function to airdrop SOL in our wallets, in Devnet.
+```
+txhash, err := wallet.c.RequestAirdrop( 
+    context.TODO(),                      // request context 
+    wallet.account.PublicKey.ToBase58(), // wallet address requesting airdrop 
+    amount,                              // amount of SOL in lamport 
+) 
+```
+
+Finally, our function will look like
+```
+func RequestAirdrop(amount uint64) (string, error) { 
+    // request for SOL using RequestAirdrop() 
+    wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint) 
+    amount = amount * 1e9 // turning SOL into lamports 
+    txhash, err := wallet.c.RequestAirdrop( 
+        context.TODO(),                      // request context wallet.account.PublicKey.ToBase58(), // wallet address requesting airdrop 
+        amount,                              // amount of SOL in lamport 
+    ) 
+    if err != nil { 
+        return "", err 
+    } 
+    return txhash, nil 
+}
+```
+
+
+Let’s call this function in our `requestAirdrop` command. We’ll be updating the `run` parameter within `requestAirdropCmd`. 
+```
+var requestAirdropCmd = &cobra.Command{
+    Use:   "requestAirdrop",
+    Short: "Request airdrop in Solana",
+    Long:  "Request airdrop to your public address passed to the command.",
+    Run: func(cmd *cobra.Command, args []string) {
+            wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint) 
+            fmt.Println("Requesting airdrop to: " + wallet.account.PublicKey.ToBase58()) 
+            amount, _ := strconv.ParseUint(args[0], 10, 64) 
+            txhash, _ := RequestAirdrop(amount) 
+            fmt.Println("Airdropped " + strconv.Itoa(int(amount)) + " SOL.\nTransaction hash: " + txhash)
+        },
+}
+```
+The `run` parameter contains the function that’ll be executed when the command is executed. Over here, we’re calling the `RequestAirdrop` function that’ll airdrop SOL into the wallet existing in our `key_data` file. You might notice that we’re using `args[0]` over here. The airdrop amount will be passed as a CLI option and that’s why we’re using command line arguments.
+
+# Implementing the transfer function
+What’s the point of a wallet if you cannot transfer funds? Let’s create a transfer function that takes in the public key of the receiver and transfers SOL to them.
+Create an empty function called `Transfer`. This function takes in the receiver address as string and the amount in uint64. It returns the transactions hash as a string.
+```
+func Transfer(receiver string, amount uint64) (string, error) { 
+}
+```
+To transfer funds, we first need to create a transaction message and the transaction signer details alongwith the public key of the recipient. We then send this message to the blockchain, and receive a transaction hash for our transaction confirmation.
+
+First, we fetch the most recent blockhash. Again, we’ll be transacting over the devnet. We can use the `GetRecentBlockhash` to do so.
+```
+wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint) 
+response, err := wallet.c.GetRecentBlockhash(context.TODO()) 
+if err != nil { 
+    return "", err 
+} 
+```
+Now, let’s create a new transfer message with the latest block hash. We can do so by using the `NewMessage` function from `types` which we had imported earlier.
+```
+message := types.NewMessage( 
+    wallet.account.PublicKey, // public key of the transaction signer
+    []types.Instruction{
+        sysprog.Transfer( 
+            wallet.account.PublicKey,  //public key of the transaction sender 
+            common.PublicKeyFromString(receiver), // wallet address of receiver 
+            amount,                               // transaction amount in lamport 
+        ), 
+    }, 
+    response.Blockhash, // recent block hash 
+) 
+```
+
+Now that we have create the transaction message, we’ll now be creating a transaction object using the `NewTransaction` function alongwith the transaction signer details.
+```
+tx, err := types.NewTransaction(message, []types.Account{wallet.account, wallet.account}) 
+if err != nil { 
+    return "", err 
+} 
+```
+Now we can send this transaction to the blockchain using the `SendTransaction2` function.
+```
+txhash, err := wallet.c.SendTransaction2(context.TODO(), tx) 
+if err != nil { 
+    return "", err 
+} 
+```
+
+Finally, your function would look like
+```
+func Transfer(receiver string, amount uint64) (string, error) { 
+    // fetch the most recent blockhash 
+    wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint) 
+    response, err := wallet.c.GetRecentBlockhash(context.TODO()) 
+    if err != nil { 
+        return "", err 
+    } 
+
+    // make a transfer message with the latest block hash 
+    message := types.NewMessage( 
+        wallet.account.PublicKey, // public key of the transaction signer
+        []types.Instruction{
+            sysprog.Transfer( 
+                wallet.account.PublicKey, // public key of the transaction sender 
+                common.PublicKeyFromString(receiver), // wallet address of the transaction receiver 
+                amount,                               // transaction amount in lamport 
+            ), 
+        }, 
+        response.Blockhash, // recent block hash 
+    ) 
+
+    // create a transaction with the message and TX signer 
+    tx, err := types.NewTransaction(message, []types.Account{wallet.account, wallet.account}) 
+    if err != nil { 
+        return "", err 
+    } 
+
+    // send the transaction to the blockchain 
+    txhash, err := wallet.c.SendTransaction2(context.TODO(), tx) 
+    if err != nil { 
+        return "", err 
+    } 
+    return txhash, nil 
+}
+```
+
+Let’s call this function in our `transfer` command. We’ll be updating the `run` parameter within `transferCmd`. 
+```
+var transferCmd = &cobra.Command{
+    Use:   "transfer",
+    Short: "Transfer SOL",
+    Long:  "Transfer SOL from your wallet to other Solana wallets.",
+    Run: func(cmd *cobra.Command, args []string) {
+            fmt.Println("Recepient address: " + args[0]) 
+            fmt.Println("Amount to be sent: " + args[1]) 
+            amount, _ := strconv.ParseUint(args[1], 10, 64) 
+            txhash, _ := Transfer(args[0], amount) 
+            fmt.Println("Transaction complete.\nTransaction hash: " + txhash)
+        },
+}
+```
+The `run` parameter contains the function that’ll be executed when the command is executed. The first parameter to our CLI would be the recipient’s transaction ID and the second parameter would be the amount to be airdropped in SOL. In the above function we’re simply calling Transfer function that’ll provide us with the transaction hash.
+
+# Putting it all together
+
+Now that we’ve implemented our four commands, let’s test it out. You can test out your commands with the following snippet
+```
+go run main.go <command name>
+```
+Let’s test our `createWallet` command. Run the following
+```
+go run main.go createWallet
+```
+You should see something like this
+
+![5]()
+
+Let’s test the `importWallet` command. You can use this command to get your existing wallet details such as your public key. To import a new wallet, simply replace the `key_data` file with your new wallet’s private key stored as a byte array. Run the following command.
+```
+go run main.go importWallet
+```
+You should see the following
+
+![6]()
+
+Since we’ve a newly created wallet, our balance is 0. Let’s airdrop ourselves some SOL to play with. Keep in mind, we can airdrop a maximum 5 SOL in one transaction. If we try to airdrop more, our balance will remain unaffected.
+```
+go run main.go requestAirdrop 3
+```
+
+![7]()
+
+We can check this transaction hash on the Solana explorer to confirm the transaction.
+![8]()
+
+Run the `importWallet` command again to confirm the change in balance.
+![9]()
+
+Now, let’s try to transfer some of this SOL to another address. We’ll be transferring 1 SOL to `7tWk3ZKZ6ohSkb9Yxrj87uvSYCLwH3QhYjGiG9yiUEKF`.
+To do so, you run the following command
+```
+go run main.go transfer <recepient public address> <amount in SOL>
+```
+
+![10]()
+
+You can confirm the transaction by viewing it on the explorer.
+
+![11]()
+
+We can see that 2 SOL has been received by `7tWk3ZKZ6ohSkb9Yxrj87uvSYCLwH3QhYjGiG9yiUEKF` sent from `BE7b78GDLRGVmdorGa89SaoEFDpdaJ39qGMVHGfh6LFt` which is our wallet.
+
+# Conclusion
+Congratulations to all the quest masters on completing this quest. You now have a functioning personal Solana blockchain CLI wallet. You can make your CLI wallet more robust by using CLI flags provided by the `cobra` go package and make the code more robust, the possibilities are endless! Cheers to all learners on their Solana learning journey!
+
