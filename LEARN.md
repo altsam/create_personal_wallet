@@ -29,11 +29,11 @@ export PATH=${PATH}:$GOBIN
 ```
 After running the `cobra init` command, you’ll see something like this
 
-![1]()
+![1](https://github.com/altsam/create_personal_wallet/blob/main/learn_assets/1.png)
 
 Your project directory would look something like this
 
-![2]()
+![2](https://github.com/altsam/create_personal_wallet/blob/main/learn_assets/2.png)
 
 # Installing the Solana SDK
 
@@ -70,7 +70,7 @@ Long: `A CLI wallet application created in Go that interacts with the Solana blo
 ```
 Now, if you run `main.go`, you’ll see the following output
 
-![3]()
+![3](https://github.com/altsam/create_personal_wallet/blob/main/learn_assets/3.png)
 
 Let’s create commands for our CLI. In this quest, we’ll be implementing `Create New Wallet`, `Import Old Wallet`, `Request Airdrop` and `Transfer` functionality.
 Let’s create commands for each.
@@ -111,7 +111,7 @@ Long: "Transfer SOL from your wallet to other Solana wallets.",
 
 Now, when you run `go run main.go`, it’ll list all the commands we just created
 
-![4]()
+![4](https://github.com/altsam/create_personal_wallet/blob/main/learn_assets/4.png)
 
 # Create your wallet structure
 
@@ -123,15 +123,15 @@ Create a new file inside the `cmd` directory and call it `utils.go`. Within this
 package cmd
 
 import ( 
-"context"	
-"io/ioutil"
-"log"
+   "context"	
+   "io/ioutil"
+   "log"
 
-"github.com/portto/solana-go-sdk/client"
-"github.com/portto/solana-go-sdk/client/rpc"
-"github.com/portto/solana-go-sdk/common"
-"github.com/portto/solana-go-sdk/program/sysprog"
-"github.com/portto/solana-go-sdk/types" 
+   "github.com/portto/solana-go-sdk/client"
+   "github.com/portto/solana-go-sdk/client/rpc"
+   "github.com/portto/solana-go-sdk/common"
+   "github.com/portto/solana-go-sdk/program/sysprog"
+   "github.com/portto/solana-go-sdk/types" 
 )
 ```
 
@@ -488,7 +488,7 @@ go run main.go createWallet
 ```
 You should see something like this
 
-![5]()
+![5](https://github.com/altsam/create_personal_wallet/blob/main/learn_assets/5.png)
 
 Let’s test the `importWallet` command. You can use this command to get your existing wallet details such as your public key. To import a new wallet, simply replace the `key_data` file with your new wallet’s private key stored as a byte array. Run the following command.
 ```
@@ -496,20 +496,20 @@ go run main.go importWallet
 ```
 You should see the following
 
-![6]()
+![6](https://github.com/altsam/create_personal_wallet/blob/main/learn_assets/6.png)
 
 Since we’ve a newly created wallet, our balance is 0. Let’s airdrop ourselves some SOL to play with. Keep in mind, we can airdrop a maximum 5 SOL in one transaction. If we try to airdrop more, our balance will remain unaffected.
 ```
 go run main.go requestAirdrop 3
 ```
 
-![7]()
+![7](https://github.com/altsam/create_personal_wallet/blob/main/learn_assets/7.png)
 
 We can check this transaction hash on the Solana explorer to confirm the transaction.
-![8]()
+![8](https://github.com/altsam/create_personal_wallet/blob/main/learn_assets/8.png)
 
 Run the `importWallet` command again to confirm the change in balance.
-![9]()
+![9](https://github.com/altsam/create_personal_wallet/blob/main/learn_assets/9.png)
 
 Now, let’s try to transfer some of this SOL to another address. We’ll be transferring 1 SOL to `7tWk3ZKZ6ohSkb9Yxrj87uvSYCLwH3QhYjGiG9yiUEKF`.
 To do so, you run the following command
@@ -517,11 +517,11 @@ To do so, you run the following command
 go run main.go transfer <recepient public address> <amount in SOL>
 ```
 
-![10]()
+![10](https://github.com/altsam/create_personal_wallet/blob/main/learn_assets/10.png)
 
 You can confirm the transaction by viewing it on the explorer.
 
-![11]()
+![11](https://github.com/altsam/create_personal_wallet/blob/main/learn_assets/11.png)
 
 We can see that 2 SOL has been received by `7tWk3ZKZ6ohSkb9Yxrj87uvSYCLwH3QhYjGiG9yiUEKF` sent from `BE7b78GDLRGVmdorGa89SaoEFDpdaJ39qGMVHGfh6LFt` which is our wallet.
 
