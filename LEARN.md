@@ -6,7 +6,7 @@ The best thing about Solana and other blockchains is that they allow us to manag
 
 Without further ado, let’s get started on creating our wallet.
 
-# Setting up development environment
+## Setting up development environment
 
 To create our CLI application, we’ll be using the Go language. Before we proceed, make sure you’ve a working Go runtime on your device. Let’s get started with setting up our project!
 
@@ -35,7 +35,7 @@ Your project directory would look something like this
 
 ![2](/learn_src/learn_assets/2.png)
 
-# Installing the Solana SDK
+## Installing the Solana SDK
 
 In the `personal-wallet` directory, run the following command
 ```
@@ -60,7 +60,7 @@ go run main.go
 ```
 If you get an error message stating that some required packages are missing, then you can install them by running `go get <the-package-name>`
 
-# Create your CLI commands
+## Create your CLI commands
 
 Let’s first give a description to our CLI. Inside the `cmd` directory, open the `root.go` file. Within it, find the variable `rootCmd`. Let’s change the description of our command.
 ```
@@ -113,7 +113,7 @@ Now, when you run `go run main.go`, it’ll list all the commands we just create
 
 ![4](/learn_src/learn_assets/4.png)
 
-# Create your wallet structure
+## Create your wallet structure
 
 Before we begin the implementation of the functionality, we need to first define the structure of our wallet. Within the `solana-sdk` exists a type for account that defines the object representing a Solana wallet using its private key in different forms(base58, byte slice and hex value). 
 
@@ -166,7 +166,7 @@ If you see an error from VS Code mentioning that “the required packages are mi
 go mod tidy
 ``` 
 
-# Implement create new wallet functionality
+## Implement create new wallet functionality
 
 The `solana-go-sdk` package provides a `NewAccount()` function that returns a newly generated Solana wallet. Let’s create a function that creates a new account for us.
 
@@ -226,7 +226,7 @@ var createWalletCmd = &cobra.Command{
 ```
 The `run` parameter contains the function that’ll be executed when the command is executed. We’re simply calling over here the function we created in `utils.go`. 
 
-# Implementing import old wallet functionality
+## Implementing import old wallet functionality
 
 What if we wanted to import one of our existing wallets? `solana-go-sdk` provides us with a handy function to do so, called `AccountFromBytes`.
 Within the `utils.go` file add a new empty function called `ImportOldWallet`. This function will take the private key in byte array
@@ -284,7 +284,7 @@ wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint)
 ```
 The `run` parameter contains the function that’ll be executed when the command is executed. We’re simply calling over here the function we created in `utils.go`. We’ll soon see how to implement the `GetBalance` function that we’re using over here to get the balance of our wallet.
 
-# Implementing get balance functionality
+## Implementing get balance functionality
 Every wallet must be able to tell its balance. Let’s implement the balance functionality for our wallet. We’ll be adding a `GetBalance` function in `utils.go`, this function can then be used to fetch the balance of the wallet existing in the `key_data` file.
 Create an empty function called `GetBalance` which returns amount as an integer(uint64).
 ```
@@ -318,7 +318,7 @@ func GetBalance() (uint64, error) {
 }
 ```
 
-# Implementing the airdrop functionality
+## Implementing the airdrop functionality
 For every transaction on the blockchain, we pay fees in SOL. To test out transacting on the blockchain, Solana allows us to ‘airdrop’ ourselves some play SOL to our wallet. Let’s create a function that allows us to airdrop SOL into our wallets.
 Create an empty function called `RequestAirdrop` and add it to the end of `utils.go`. This function takes in the amount of SOL to be airdropped and returns the transaction confirmation hash as string. 
 ```
@@ -374,7 +374,7 @@ var requestAirdropCmd = &cobra.Command{
 ```
 The `run` parameter contains the function that’ll be executed when the command is executed. Over here, we’re calling the `RequestAirdrop` function that’ll airdrop SOL into the wallet existing in our `key_data` file. You might notice that we’re using `args[0]` over here. The airdrop amount will be passed as a CLI option and that’s why we’re using command line arguments.
 
-# Implementing the transfer function
+## Implementing the transfer function
 What’s the point of a wallet if you cannot transfer funds? Let’s create a transfer function that takes in the public key of the receiver and transfers SOL to them.
 Create an empty function called `Transfer`. This function takes in the receiver address as string and the amount in uint64. It returns the transactions hash as a string.
 ```
@@ -476,7 +476,7 @@ var transferCmd = &cobra.Command{
 ```
 The `run` parameter contains the function that’ll be executed when the command is executed. The first parameter to our CLI would be the recipient’s transaction ID and the second parameter would be the amount to be airdropped in SOL. In the above function we’re simply calling Transfer function that’ll provide us with the transaction hash.
 
-# Putting it all together
+## Putting it all together
 
 Now that we’ve implemented our four commands, let’s test it out. You can test out your commands with the following snippet
 ```
@@ -525,6 +525,6 @@ You can confirm the transaction by viewing it on the explorer.
 
 We can see that 2 SOL has been received by `7tWk3ZKZ6ohSkb9Yxrj87uvSYCLwH3QhYjGiG9yiUEKF` sent from `BE7b78GDLRGVmdorGa89SaoEFDpdaJ39qGMVHGfh6LFt` which is our wallet.
 
-# Conclusion
+## Conclusion
 Congratulations to all the quest masters on completing this quest. You now have a functioning personal Solana blockchain CLI wallet. You can make your CLI wallet more robust by using CLI flags provided by the `cobra` go package and make the code more robust, the possibilities are endless! Cheers to all learners on their Solana learning journey!
 
