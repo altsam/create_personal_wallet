@@ -526,5 +526,5 @@ You can confirm the transaction by viewing it on the explorer.
 We can see that 2 SOL has been received by `7tWk3ZKZ6ohSkb9Yxrj87uvSYCLwH3QhYjGiG9yiUEKF` sent from `BE7b78GDLRGVmdorGa89SaoEFDpdaJ39qGMVHGfh6LFt` which is our wallet.
 
 ## Conclusion
-Congratulations to all the quest masters on completing this quest. You now have a functioning personal Solana blockchain CLI wallet. You can make your CLI wallet more robust by using CLI flags provided by the `cobra` go package and make the code more robust, the possibilities are endless! Cheers to all learners on their Solana learning journey!
+Congratulations to all the quest masters on completing this quest. You now have a functioning personal Solana blockchain CLI wallet. You can make your CLI wallet more robust by using CLI flags provided by the `cobra` go package and make the code more robust, the possibilities are endless! Cheers to all learners on their Solana learning journey, enjoy your NFT available [here](https://alpha.layer3.xyz/task/create-your-personal-solana-wallet) ;)
 
