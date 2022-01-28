@@ -91,8 +91,8 @@ Long: “Creates a new wallet and provides wallet address and private key.”,
 Similarly, for `importWallet.go`
 ```
 Use:   "importWallet", 
-Short: "Imports and existing wallet", 
-Long: "Imports and existing wallet from a given private key.",
+Short: "Imports an existing wallet", 
+Long: "Imports an existing wallet from a given private key.",
 ```
 
 For `requestAirdrop.go`
