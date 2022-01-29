@@ -344,7 +344,8 @@ func RequestAirdrop(amount uint64) (string, error) {
     wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint)
     amount = amount * 1e9 // turning SOL into lamports
     txhash, err := wallet.c.RequestAirdrop(
-        context.TODO(),                      // request context wallet.account.PublicKey.ToBase58(), // wallet address requesting airdrop
+        context.TODO(),                      // request context
+        wallet.account.PublicKey.ToBase58(), // wallet address requesting airdrop
         amount,                              // amount of SOL in lamport
     )
     if err != nil {
