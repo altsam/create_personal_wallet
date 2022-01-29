@@ -10,15 +10,19 @@ Without further ado, let’s get started on creating our wallet.
 
 To create our CLI application, we’ll be using the Go language. Before we proceed, make sure you’ve a working Go runtime on your device. Let’s get started with setting up our project!
 
-
 We’ll be using the Cobra go package to create our CLI scaffolding i.e. setting up our project skeleton for us that’ll be helpful to create our CLI application. To do so, run the following command
 ```
 go install github.com/spf13/cobra/cobra@latest
 ```
 
+In the `personal-wallet` directory, run the following command. This creates a `go.mod` file, wherein we’ll be tracking all the dependencies of the different packages that will be used.
+```
+go mod init personal-wallet
+```
+
 Once this is done, we can create our code scaffolding using the following command
 ```
-cobra init --pkg-name personal-wallet
+cobra init
 ```
 
 On UNIX systems (Linux or MacOS), if you face an error stating “command not found”, append the following snippet in you “.bashrc” or “.zshrc”
@@ -36,12 +40,6 @@ Your project directory would look something like this
 ![2](/learn_src/learn_assets/2.png)
 
 ## Installing the Solana SDK
-
-In the `personal-wallet` directory, run the following command
-```
-go mod init personal-wallet
-```
-This creates a `go.mod` file, wherein we’ll be tracking all the dependencies of the different packages that will be used.
 
 To interact with the Solana blockchain, we’ll be using the `solana-go-sdk`. Install the solana-go-sdk package in your project. In the terminal, type the following:
 ```
