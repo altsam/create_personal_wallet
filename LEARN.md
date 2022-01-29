@@ -146,7 +146,7 @@ c 	    *client.Client
 `account` is a parameter that’ll be holding the Solana wallet object and the `c` parameter holds the RPC client object that’ll be used to connect to the Solana network.
 
 Putting everything together, the final code would look like this
-```
+```go
 package cmd
 
 import (
@@ -186,7 +186,7 @@ Let’s store the private key of this newly created account in a new file called
 data := []byte(newAccount.PrivateKey) // convert the private key to byte array for storage
 err := ioutil.WriteFile("data", data, 0644)
 if err != nil {
-log.Fatal(err)
+    log.Fatal(err)
 }
 ```
 
@@ -243,41 +243,41 @@ Let’s fill in this function.
 ```go
 wallet, err := types.AccountFromBytes(privateKey)
 if err != nil {
-return Wallet{}, err
+    return Wallet{}, err
 }
 
 return Wallet {
-wallet,
-client.NewClient(RPCEndpoint),
+    wallet,
+    client.NewClient(RPCEndpoint),
 }, nil
 ```
 The `solana-go-sdk` provides a handy function to import an account using the `AccountFromBytes` function. Finally, the `ImportOldWallet` function would look like the following.
 ```go
 func ImportOldWallet(privateKey []byte, RPCEndpoint string) (Wallet, error) {
-// import a wallet with bytes slice private key
-wallet, err := types.AccountFromBytes(privateKey)
-if err != nil {
-return Wallet{}, err
-}
-return Wallet{
-wallet,
-client.NewClient(RPCEndpoint),
-}, nil
+    // import a wallet with bytes slice private key
+    wallet, err := types.AccountFromBytes(privateKey)
+    if err != nil {
+        return Wallet{}, err
+    }
+    return Wallet{
+        wallet,
+        client.NewClient(RPCEndpoint),
+    }, nil
 }
 ```
 Let’s call this function in our `importWallet` command. We’ll be updating the `run` parameter within `importWalletCmd`.
 ```go
 var importWalletCmd = &cobra.Command{
-Use:   "importWallet",
-Short: "Imports and existing wallet",
-Long:  "Imports and existing wallet from a given private key in the 'data' file and returns a wallet object.",
-Run: func(cmd *cobra.Command, args []string) {
-fmt.Println("Importing wallet from the 'key_data' file.")
-wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint)
-      		fmt.Println("Public Key: " + wallet.account.PublicKey.ToBase58())
-      		balance, _ := GetBalance()
-       		fmt.Println("Wallet balance: " + strconv.Itoa(int(balance/1e9)) + "SOL")
-},
+    Use:   "importWallet",
+    Short: "Imports and existing wallet",
+    Long:  "Imports and existing wallet from a given private key in the 'data' file and returns a wallet object.",
+    Run: func(cmd *cobra.Command, args []string) {
+        fmt.Println("Importing wallet from the 'key_data' file.")
+        wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint)
+        fmt.Println("Public Key: " + wallet.account.PublicKey.ToBase58())
+        balance, _ := GetBalance()
+        fmt.Println("Wallet balance: " + strconv.Itoa(int(balance/1e9)) + "SOL")
+    },
 }
 ```
 The `run` parameter contains the function that’ll be executed when the command is executed. We’re simply calling over here the function we created in `utils.go`. We’ll soon see how to implement the `GetBalance` function that we’re using over here to get the balance of our wallet.
@@ -297,7 +297,7 @@ context.TODO(),                      // request context
 wallet.account.PublicKey.ToBase58(), // wallet to fetch balance for
 )
 if err != nil {
-return 0, nil
+    return 0, nil
 }
 ```
 The `GetBalance` function returns us the balance in lamports. We can then convert this to SOL by dividing with 1e9.
@@ -362,12 +362,12 @@ var requestAirdropCmd = &cobra.Command{
     Short: "Request airdrop in Solana",
     Long:  "Request airdrop to your public address passed to the command.",
     Run: func(cmd *cobra.Command, args []string) {
-            wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint)
-            fmt.Println("Requesting airdrop to: " + wallet.account.PublicKey.ToBase58())
-            amount, _ := strconv.ParseUint(args[0], 10, 64)
-            txhash, _ := RequestAirdrop(amount)
-            fmt.Println("Airdropped " + strconv.Itoa(int(amount)) + " SOL.\nTransaction hash: " + txhash)
-        },
+        wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint)
+        fmt.Println("Requesting airdrop to: " + wallet.account.PublicKey.ToBase58())
+        amount, _ := strconv.ParseUint(args[0], 10, 64)
+        txhash, _ := RequestAirdrop(amount)
+        fmt.Println("Airdropped " + strconv.Itoa(int(amount)) + " SOL.\nTransaction hash: " + txhash)
+    },
 }
 ```
 The `run` parameter contains the function that’ll be executed when the command is executed. Over here, we’re calling the `RequestAirdrop` function that’ll airdrop SOL into the wallet existing in our `key_data` file. You might notice that we’re using `args[0]` over here. The airdrop amount will be passed as a CLI option and that’s why we’re using command line arguments.
@@ -464,12 +464,12 @@ var transferCmd = &cobra.Command{
     Short: "Transfer SOL",
     Long:  "Transfer SOL from your wallet to other Solana wallets.",
     Run: func(cmd *cobra.Command, args []string) {
-            fmt.Println("Recepient address: " + args[0])
-            fmt.Println("Amount to be sent: " + args[1])
-            amount, _ := strconv.ParseUint(args[1], 10, 64)
-            txhash, _ := Transfer(args[0], amount)
-            fmt.Println("Transaction complete.\nTransaction hash: " + txhash)
-        },
+        fmt.Println("Recepient address: " + args[0])
+        fmt.Println("Amount to be sent: " + args[1])
+        amount, _ := strconv.ParseUint(args[1], 10, 64)
+        txhash, _ := Transfer(args[0], amount)
+        fmt.Println("Transaction complete.\nTransaction hash: " + txhash)
+    },
 }
 ```
 The `run` parameter contains the function that’ll be executed when the command is executed. The first parameter to our CLI would be the recipient’s transaction ID and the second parameter would be the amount to be airdropped in SOL. In the above function we’re simply calling Transfer function that’ll provide us with the transaction hash.
