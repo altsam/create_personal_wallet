@@ -183,8 +183,8 @@ newAccount := types.NewAccount()
 
 Let’s store the private key of this newly created account in a new file called data
 ```go
-data := []byte(newAccount.PrivateKey) // convert the private key to byte array for storage
-err := ioutil.WriteFile("data", data, 0644)
+key_data := []byte(newAccount.PrivateKey) // convert the private key to byte array for storage
+err := ioutil.WriteFile("key_data", key_data, 0644)
 if err != nil {
     log.Fatal(err)
 }
@@ -195,9 +195,9 @@ Final function looks like
 func CreateNewWallet(RPCEndpoint string) Wallet {
 // create a new wallet using types.NewAccount()
    	newAccount := types.NewAccount()
-   	data := []byte(newAccount.PrivateKey)
+   	key_data := []byte(newAccount.PrivateKey)
 
-  	err := ioutil.WriteFile("data", data, 0644)
+  	err := ioutil.WriteFile("key_data", key_data, 0644)
    	if err != nil {
        		log.Fatal(err)
    	}
@@ -218,7 +218,7 @@ var createWalletCmd = &cobra.Command{
        fmt.Println("Creating new wallet.")
        wallet := CreateNewWallet(rpc.DevnetRPCEndpoint)
        fmt.Println("Public Key: " + wallet.account.PublicKey.ToBase58())
-       fmt.Println("Private Key Saved in 'data' file")
+       fmt.Println("Private Key Saved in 'key_data' file")
    },
 }
 ```
@@ -235,7 +235,7 @@ Again we’ll be using this function to create our `wallet` object which will be
 We’ll be adding out functionalities in the `utils.go`. Create an empty function called `CreateNewWallet` and add it to the end of `utils.go`. This function takes in the privateKey as a byte array, RPCEndpoint as a string and returns a Wallet object.
 
 ```go
-func ImportOldWallet(privateKey []byte, RPCEndpoint string) (Wallet, error) {
+func ImportOldWallet(RPCEndpoint string) (Wallet, error) {
 }
 ```
 
@@ -253,7 +253,7 @@ return Wallet {
 ```
 The `solana-go-sdk` provides a handy function to import an account using the `AccountFromBytes` function. Finally, the `ImportOldWallet` function would look like the following.
 ```go
-func ImportOldWallet(privateKey []byte, RPCEndpoint string) (Wallet, error) {
+func ImportOldWallet(RPCEndpoint string) (Wallet, error) {
     // import a wallet with bytes slice private key
     wallet, err := types.AccountFromBytes(privateKey)
     if err != nil {
@@ -320,7 +320,7 @@ func GetBalance() (uint64, error) {
 For every transaction on the blockchain, we pay fees in SOL. To test out transacting on the blockchain, Solana allows us to ‘airdrop’ ourselves some play SOL to our wallet. Let’s create a function that allows us to airdrop SOL into our wallets.
 Create an empty function called `RequestAirdrop` and add it to the end of `utils.go`. This function takes in the amount of SOL to be airdropped and returns the transaction confirmation hash as string.
 ```go
-func ImportOldWallet(privateKey []byte, RPCEndpoint string) (Wallet, error) {
+func ImportOldWallet(RPCEndpoint string) (Wallet, error) {
 }
 ```
 Let’s first import our wallet from the `key_data` file and also convert our SOL amount to lamports as the `RequestAirdrop` function takes the amount in lamports (1SOL = 1e9 lamports). We can do so using the following command
