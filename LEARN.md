@@ -66,7 +66,7 @@ Let’s first give a description to our CLI. Inside the `cmd` directory, open th
 ```go
 Use:   "personal-wallet",
 Short: "Solana personal wallet",
-Long: `A CLI wallet application created in Go that interacts with the Solana blockchain.`
+Long:  "A CLI wallet application created in Go that interacts with the Solana blockchain."
 ```
 Now, if you run `main.go`, you’ll see the following output
 
@@ -85,28 +85,28 @@ Inside `createWallet.go`, update the `Use`, `Short` and `Long` parameters within
 ```go
 Use:   "createWallet",
 Short: "Creates a new wallet",
-Long: “Creates a new wallet and provides wallet address and private key.”,
+Long:  "Creates a new wallet and provides wallet address and private key.",
 ```
 
 Similarly, for `importWallet.go`
 ```go
 Use:   "importWallet",
 Short: "Imports and existing wallet",
-Long: "Imports and existing wallet from a given private key.",
+Long:  "Imports and existing wallet from a given private key.",
 ```
 
 For `requestAirdrop.go`
 ```go
 Use:   "requestAirdrop",
 Short: "Request airdrop in Solana",
-Long: "Request airdrop to your public address.",
+Long:  "Request airdrop to your public address.",
 ```
 
 For `transfer.go`
 ```go
 Use:   "createWallet",
 Short: "Creates a new wallet",
-Long: "Transfer SOL from your wallet to other Solana wallets.",
+Long:  "Transfer SOL from your wallet to other Solana wallets.",
 ```
 
 Now, when you run `go run main.go`, it’ll list all the commands we just created
@@ -278,7 +278,7 @@ fmt.Println("Importing wallet from the 'key_data' file.")
 wallet, _ := ImportOldWallet(rpc.DevnetRPCEndpoint)
       		fmt.Println("Public Key: " + wallet.account.PublicKey.ToBase58())
       		balance, _ := GetBalance()
-       		fmt.Println("Wallet balance: " + strconv.Itoa(int(balance/1e9)) + “SOL”)
+       		fmt.Println("Wallet balance: " + strconv.Itoa(int(balance/1e9)) + "SOL")
 },
 }
 ```
